@@ -3,17 +3,18 @@
 namespace App\Filament\Resources\BookingResource\Pages;
 
 use App\Filament\Resources\BookingResource;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewBooking extends ViewRecord
 {
     protected static string $resource = BookingResource::class;
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $infolist): Schema
     {
         return $infolist->schema([
             Section::make('Booking Details')->schema([
@@ -35,17 +36,32 @@ class ViewBooking extends ViewRecord
                     TextEntry::make('paid_at')->dateTime()->label('Paid At'),
                 ]),
             ]),
-            Section::make('Advert')->schema([
-                TextEntry::make('advert.title')->label('Title'),
-                TextEntry::make('advert.status')->label('Status')->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                        'pending_review' => 'warning',
-                        default => 'gray',
-                    }),
-                TextEntry::make('advert.file_type')->label('File Type'),
-                TextEntry::make('rejection_reason')->label('Rejection Reason')->visible(fn ($record) => $record->rejection_reason),
+            Section::make('Product / Advert')->schema([
+                Grid::make(3)->schema([
+                    TextEntry::make('advert.title')->label('Product Name')->placeholder('—'),
+                    TextEntry::make('advert.original_filename')->label('Uploaded File')->placeholder('—'),
+                    TextEntry::make('advert.file_type')->label('File Type')->placeholder('—'),
+                    TextEntry::make('advert.status')->label('Status')->badge()
+                        ->color(fn (?string $state): string => match ($state) {
+                            'approved' => 'success',
+                            'rejected' => 'danger',
+                            'pending_review' => 'warning',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('advert.file_size')
+                        ->label('File Size')
+                        ->formatStateUsing(fn ($state) => $state ? number_format($state / 1048576, 2).' MB' : '—'),
+                    TextEntry::make('advert.rejection_reason')->label('Rejection Reason')->placeholder('—'),
+                ]),
+                ImageEntry::make('advert.file_path')
+                    ->label('Preview')
+                    ->visible(fn ($record) => $record->advert?->file_type === 'image')
+                    ->disk('public'),
+                TextEntry::make('advert.file_url')
+                    ->label('Video URL')
+                    ->visible(fn ($record) => $record->advert?->file_type === 'video')
+                    ->url(fn (?string $state) => $state)
+                    ->openUrlInNewTab(),
             ]),
         ]);
     }

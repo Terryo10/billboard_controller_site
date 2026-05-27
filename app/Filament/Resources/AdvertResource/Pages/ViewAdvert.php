@@ -3,18 +3,18 @@
 namespace App\Filament\Resources\AdvertResource\Pages;
 
 use App\Filament\Resources\AdvertResource;
-use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewAdvert extends ViewRecord
 {
     protected static string $resource = AdvertResource::class;
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $infolist): Schema
     {
         return $infolist->schema([
             Section::make('Advert Details')->schema([

@@ -10,12 +10,12 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -26,13 +26,18 @@ use Filament\Tables\Table;
 class StationResource extends Resource
 {
     protected static ?string $model = Station::class;
-    protected static ?string $navigationIcon = 'heroicon-o-tv';
-    protected static ?string $navigationGroup = 'Infrastructure';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tv';
+
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function getNavigationGroup(): ?string
     {
-        return $form->schema([
+        return 'Infrastructure';
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->schema([
             Section::make('Station Details')->schema([
                 Grid::make(2)->schema([
                     TextInput::make('name')
